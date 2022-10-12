@@ -1,21 +1,16 @@
-const app = require('./app');
-const { connectMongo } = require('./db/contacts');
+const mongoose = require("mongoose");
 
-const PORT = process.env.PORT;
+const app = require("./app");
 
-const start = async () => {
-  try {
-    await connectMongo();
+const { DB_HOST, PORT = 3000 } = process.env;
 
-    app.listen(PORT, err => {
-      if (err) {
-        console.error('Error at server launch', err);
-      }
-      console.log(`Server running. Use our API on port: ${PORT}`);
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-start();
+mongoose
+  .connect(DB_HOST, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => app.listen(PORT))
+  .catch((error) => {
+    console.log(error.message);
+    process.exit(1);
+  });
